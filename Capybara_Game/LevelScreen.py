@@ -74,3 +74,16 @@ def levels_screen(window):
 
 def start_level(level, difficulty):
     print(f"Starting Level {level} with {difficulty} difficulty")
+
+def settings_screen(window):
+    print("Accessing Settings")
+
+if __name__ == '__main__':
+    pygame.init()
+    WIDTH, HEIGHT = 800, 600
+    WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
+    pygame.display.set_caption('Capybara Collector')
+    WHITE = (255, 255, 255)
+    BLACK = (0, 0, 0)
+    ORANGE = (255, 165, 0)
+    levels_screen(WINDOW)
