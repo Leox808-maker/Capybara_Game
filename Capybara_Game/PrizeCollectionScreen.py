@@ -80,3 +80,34 @@ class PrizeCollectionScreen:
                 if self.button_rects['Previous'].collidepoint(mouse_pos):
                     self.current_page = (self.current_page - 1) % len(self.prize_grid)
         return NoneD
+
+     def prize_collection_loop(self):
+            while self.running:
+                self.draw_prize_collection_screen()
+                action = self.handle_input()
+                if action == 'menu':
+                    return 'menu'
+                pygame.display.update()
+
+        def save_prizes(self, new_prize):
+            self.prizes.append(new_prize)
+            with open('prizes.json', 'w') as f:
+                json.dump(self.prizes, f)
+
+    def show_prize_collection_screen(window):
+        prize_collection_screen = PrizeCollectionScreen(window)
+        result = prize_collection_screen.prize_collection_loop()
+        if result == 'menu':
+            return 'menu'
+
+    if __name__ == '__main__':
+        pygame.init()
+        WIDTH, HEIGHT = 800, 600
+        WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
+        pygame.display.set_caption('Capybara Collector')
+        WHITE = (255, 255, 255)
+        BLACK = (0, 0, 0)
+        result = show_prize_collection_screen(WINDOW)
+        if result == 'menu':
+            #
+            pass
