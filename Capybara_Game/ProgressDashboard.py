@@ -78,3 +78,70 @@ class ProgressDashboard:
         pygame.draw.rect(self.window, self.button_color, self.button_rects['Menu'])
         menu_text = self.button_font.render("Menu", True, (255, 255, 255))
         self.window.blit(menu_text, (self.button_rects['Menu'].x + 15, self.button_rects['Menu'].y + 10))
+
+    def draw_stat(self, text, y):
+        stat_text = self.small_font.render(text, True, (255, 255, 255))
+        self.window.blit(stat_text, (WIDTH // 2 - stat_text.get_width() // 2, y))
+
+    def format_time(self, seconds):
+        hours = seconds // 3600
+        minutes = (seconds % 3600) // 60
+        seconds = seconds % 60
+        return f"{hours}h {minutes}m {seconds}s"
+
+    def draw_past_games(self, start_y):
+        past_games_title = self.font.render("Past Game Stats", True, (255, 255, 255))
+        self.window.blit(past_games_title, (WIDTH // 2 - past_games_title.get_width() // 2, start_y))
+        for i, game in enumerate(self.past_games[-5:]):
+            game_text = self.small_font.render(
+                f"Game {len(self.past_games) - i}: Score={game['score']}, Money={game['money_earned']}, Levels={game['levels_completed']}",
+                True, (255, 255, 255)
+            )
+            self.window.blit(game_text, (WIDTH // 2 - game_text.get_width() // 2, start_y + 40 + i * 30))
+
+    def draw_prizes(self, start_y):
+        prizes_title = self.font.render("Collected Prizes", True, (255, 255, 255))
+        self.window.blit(prizes_title, (WIDTH // 2 - prizes_title.get_width() // 2, start_y))
+        for i, prize in enumerate(self.prizes[-5:]):
+            prize_text = self.small_font.render(f"{prize}", True, (255, 255, 255))
+            self.window.blit(prize_text, (WIDTH // 2 - prize_text.get_width() // 2, start_y + 40 + i * 30))
+
+    def handle_input(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                if self.button_rects['Menu'].collidepoint(mouse_pos):
+                    self.running = False
+                    return 'menu'
+        return None
+
+    def dashboard_loop(self):
+        while self.running:
+            self.draw_dashboard()
+            action = self.handle_input()
+            if action == 'menu':
+                return 'menu'
+            pygame.display.update()
+
+
+def show_progress_dashboard(window):
+    progress_dashboard = ProgressDashboard(window)
+    result = progress_dashboard.dashboard_loop()
+    if result == 'menu':
+        return 'menu'
+
+
+if __name__ == '__main__':
+    pygame.init()
+    WIDTH, HEIGHT = 800, 600
+    WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
+    pygame.display.set_caption('Capybara Collector')
+    WHITE = (255, 255, 255)
+    BLACK = (0, 0, 0)
+    result = show_progress_dashboard(WINDOW)
+    if result == 'menu':
+        #
+        pass

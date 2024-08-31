@@ -115,11 +115,48 @@ def game_loop():
         pygame.display.update()
         clock.tick(60)
 
+        if __name__ == '__main__':
+            while True:
+                menu()
+                handle_menu()
+                game_loop()
 
-if __name__ == '__main__':
-    while True:
-        menu()
-        handle_menu()
-        game_loop()
+def change_capybara_skin(new_skin):
+    with open('settings.json', 'r') as f:
+        settings = json.load(f)
+    settings['capybara_skin'] = new_skin
+    with open('settings.json', 'w') as f:
+        json.dump(settings, f)
+
+    print(f"Capybara skin changed to {new_skin}")
+
+def change_orange_skin(new_skin):
+    with open('settings.json', 'r') as f:
+        settings = json.load(f)
+    settings['orange_skin'] = new_skin
+    with open('settings.json', 'w') as f:
+        json.dump(settings, f)
+
+    print(f"Orange skin changed to {new_skin}")
+
+def customize_background(new_background):
+    with open('settings.json', 'r') as f:
+        settings = json.load(f)
+    settings['background'] = new_background
+    with open('settings.json', 'w') as f:
+        json.dump(settings, f)
+
+    print(f"Background changed to {new_background}")
+
+def reset_customizations():
+    default_settings = {
+        'capybara_skin': 'default_capybara.png',
+        'orange_skin': 'default_orange.png',
+        'background': 'default_bg.png'
+    }
+    with open('settings.json', 'w') as f:
+        json.dump(default_settings, f)
+
+    print("Customizations have been reset to default")
 
 
