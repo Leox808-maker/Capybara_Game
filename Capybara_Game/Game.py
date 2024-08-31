@@ -100,3 +100,101 @@ class Game:
     def update_high_scores(self):
         if self.score > self.high_scores[self.difficulty]:
             self.high_scores[self.difficulty] = self.score
+
+    def check_collisions(self):
+            new_orange_list = []
+            new_bonus_list = []
+            for x, y in self.orange_list:
+                if y > HEIGHT:
+                    continue
+                if self.capybara_x < x < self.capybara_x + self.capybara_img.get_width() and self.capybara_y < y < self.capybara_y + self.capybara_img.get_height():
+                    self.score += 1
+                    self.money += 15
+                    self.sound_effects['collect'].play()
+                else:
+                    new_orange_list.append([x, y])
+            self.orange_list = new_orange_list
+
+            for x, y, t in self.bonus_list:
+                if y > HEIGHT:
+                    continue
+                if self.capybara_x < x < self.capybara_x + self.capybara_img.get_width() and self.capybara_y < y < self.capybara_y + self.capybara_img.get_height():
+                    if t == 'apple':
+                        self.capybara_health = min(self.capybara_health + 20, self.max_health)
+                    elif t == 'banana':
+                        self.score += 5
+                        self.money += 50
+                    self.sound_effects['bonus'].play()
+                else:
+                    new_bonus_list.append([x, y, t])
+            self.bonus_list = new_bonus_list
+
+        def update_time(self):
+            self.time_elapsed = (pygame.time.get_ticks() - self.start_time) / 1000
+
+        def handle_input(self):
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                    pygame.quit()
+                    sys.exit()
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_LEFT]:
+                self.capybara_x -= self.capybara_speed
+            if keys[pygame.K_RIGHT]:
+                self.capybara_x += self.capybara_speed
+            if self.capybara_x < 0:
+                self.capybara_x = 0
+            if self.capybara_x > WIDTH - self.capybara_img.get_width():
+                self.capybara_x = WIDTH - self.capybara_img.get_width()
+
+        def check_health(self):
+            if self.capybara_health <= 0:
+                self.running = False
+                self.update_high_scores()
+                self.save_high_scores()
+
+        def update_health(self):
+            if random.random() < 0.01 * self.difficulty_multiplier:
+                self.capybara_health -= 1
+                self.sound_effects['hit'].play()
+
+        def game_loop(self):
+            clock = pygame.time.Clock()
+            while self.running:
+                self.handle_input()
+                self.spawn_orange()
+                self.move_oranges()
+                self.move_bonus()
+                self.check_collisions()
+                self.update_time()
+                self.update_health()
+                self.check_health()
+                self.window.fill(WHITE)
+                self.draw_capybara()
+                self.draw_oranges()
+                self.draw_bonus()
+                self.draw_score()
+                pygame.display.update()
+                clock.tick(60)
+
+    def start_game(level, difficulty):
+        pygame.init()
+        WIDTH, HEIGHT = 800, 600
+        WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
+        pygame.display.set_caption('Capybara Collector')
+        WHITE = (255, 255, 255)
+        BLACK = (0, 0, 0)
+        game = Game(WINDOW, level, difficulty)
+        game.game_loop()
+
+    if __name__ == '__main__':
+        pygame.init()
+        WIDTH, HEIGHT = 800, 600
+        WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
+        pygame.display.set_caption('Capybara Collector')
+        WHITE = (255, 255, 255)
+        BLACK = (0, 0, 0)
+        level = 1
+        difficulty = "Normal"
+        start_game(level, difficulty)
