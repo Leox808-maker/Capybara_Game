@@ -100,3 +100,43 @@ class VictoryScreen:
             leaderboard[prize] = 1
         with open('leaderboard.json', 'w') as f:
             json.dump(leaderboard, f)
+
+    def show_victory_screen(window, score, money, difficulty, high_scores):
+        victory_screen = VictoryScreen(window, score, money, difficulty, high_scores)
+        result = victory_screen.victory_loop()
+        if result == 'menu':
+            return 'menu'
+        elif result == 'restart':
+            return 'restart'
+
+    if __name__ == '__main__':
+        pygame.init()
+        WIDTH, HEIGHT = 800, 600
+        WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
+        pygame.display.set_caption('Capybara Collector')
+        WHITE = (255, 255, 255)
+        BLACK = (0, 0, 0)
+        level = 1
+        difficulty = 'Normal'
+        score = 100
+        money = 150
+        high_scores = {'Easy': 0, 'Normal': 0, 'Hard': 0}
+        result = show_victory_screen(WINDOW, score, money, difficulty, high_scores)
+        if result == 'menu':
+            #
+            pass
+        elif result == 'restart':
+            #
+            pass
+
+        def show_leaderboard(self):
+            leaderboard = self.load_leaderboard()
+            leaderboard_text = self.font.render("Leaderboard:", True, (255, 255, 255))
+            self.window.blit(leaderboard_text, (WIDTH // 2 - leaderboard_text.get_width() // 2, 50))
+
+            for i, (prize, count) in enumerate(leaderboard.items()):
+                prize_text = self.font.render(f"{i + 1}. {prize}: {count}", True, (255, 255, 255))
+                self.window.blit(prize_text, (WIDTH // 2 - prize_text.get_width() // 2, 100 + i * 40))
+
+            pygame.display.update()
+            pygame.time.wait(5000)
