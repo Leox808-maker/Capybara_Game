@@ -74,4 +74,64 @@ class GameOverScreen:
             self.high_scores[self.difficulty] = self.score
             self.save_high_scores()
 
+        def save_high_scores(self):
+            with open('high_scores.json', 'w') as f:
+                json.dump(self.high_scores, f)
+
+        def save_game_state(self):
+            game_state = {
+                'level': self.level,
+                'difficulty': self.difficulty,
+                'score': self.score,
+                'money': self.score * 15
+            }
+            with open('game_state.json', 'w') as f:
+                json.dump(game_state, f)
+
+        def show_tips(self):
+            tip = random.choice(self.tips)
+            tip_text = self.font.render(f"Tip: {tip}", True, (255, 255, 255))
+            self.window.blit(tip_text, (WIDTH // 2 - tip_text.get_width() // 2, HEIGHT // 2 + 150))
+            pygame.display.update()
+            pygame.time.wait(3000)
+
+        def game_over_loop(self):
+            while self.running:
+                self.draw_game_over_screen()
+                action = self.handle_input()
+                if action == 'menu':
+                    pygame.mixer.music.stop()
+                    return 'menu'
+                if action == 'restart':
+                    pygame.mixer.music.stop()
+                    return 'restart'
+                pygame.display.update()
+
+    def show_game_over_screen(window, score, high_scores, level, difficulty):
+        game_over_screen = GameOverScreen(window, score, high_scores, level, difficulty)
+        result = game_over_screen.game_over_loop()
+        if result == 'menu':
+            return 'menu'
+        elif result == 'restart':
+            return 'restart'
+
+    if __name__ == '__main__':
+        pygame.init()
+        WIDTH, HEIGHT = 800, 600
+        WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
+        pygame.display.set_caption('Capybara Collector')
+        WHITE = (255, 255, 255)
+        BLACK = (0, 0, 0)
+        level = 1
+        difficulty = 'Normal'
+        score = 50
+        high_scores = {'Easy': 0, 'Normal': 100, 'Hard': 200}
+        result = show_game_over_screen(WINDOW, score, high_scores, level, difficulty)
+        if result == 'menu':
+            #
+            pass
+        elif result == 'restart':
+            #
+            pass
+
 
