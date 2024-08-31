@@ -1,3 +1,5 @@
+import os
+
 import pygame
 import sys
 import random
@@ -6,11 +8,15 @@ pygame.init()
 
 WIDTH, HEIGHT = 800, 600
 WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption('Capybara Collector')
+pygame.display.set_caption('Capybara Oranges')
 
 WHITE = (255, 255, 255)
 ORANGE = (255, 165, 0)
 BLACK = (0, 0, 0)
+
+ASSET_DIR = 'assets'
+CAPYBARA_IMG = pygame.image.load(os.path.join(ASSET_DIR, 'capybara.png'))
+ORANGE_IMG = pygame.image.load(os.path.join(ASSET_DIR, 'orange.png'))
 
 capybara_x = WIDTH // 2
 capybara_y = HEIGHT - 50
@@ -65,3 +71,53 @@ def game_loop():
     global capybara_x, capybara_y, orange_list, score, money, time_elapsed
     clock = pygame.time.Clock()
     start_time = pygame.time.get_ticks()
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            capybara_x -= capybara_speed
+        if keys[pygame.K_RIGHT]:
+            capybara_x += capybara_speed
+
+        if capybara_x < 0:
+            capybara_x = 0
+        if capybara_x > WIDTH - CAPYBARA_IMG.get_width():
+            capybara_x = WIDTH - CAPYBARA_IMG.get_width()
+
+        if random.randint(1, 20) == 1:
+            orange_x = random.randint(20, WIDTH - 20)
+            orange_list.append([orange_x, 0])
+
+        orange_list = [[x, y + orange_speed] for x, y in orange_list]
+
+        new_orange_list = []
+        for x, y in orange_list:
+            if y > HEIGHT:
+                continue
+            if capybara_x < x < capybara_x + CAPYBARA_IMG.get_width() and capybara_y < y < capybara_y + CAPYBARA_IMG.get_height():
+                score += 1
+                money += 15
+            else:
+                new_orange_list.append([x, y])
+        orange_list = new_orange_list
+
+        time_elapsed = (pygame.time.get_ticks() - start_time) / 1000
+
+        WINDOW.fill(WHITE)
+        draw_capybara()
+        draw_oranges()
+        draw_score()
+        pygame.display.update()
+        clock.tick(60)
+
+
+if __name__ == '__main__':
+    while True:
+        menu()
+        handle_menu()
+        game_loop()
